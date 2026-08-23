@@ -13,6 +13,7 @@ function App() {
   const [activeScenario, setActiveScenario] = useState('HIGH_RISK');
   const [simulationStep, setSimulationStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [actionMessage, setActionMessage] = useState('');
   
   const [liveExplanation, setLiveExplanation] = useState('');
   const [isExplaining, setIsExplaining] = useState(false);
@@ -96,6 +97,7 @@ function App() {
     setIsPlaying(true);
     setLiveExplanation('');
     setAuditHash(null);
+    setActionMessage('');
   };
 
   return (
@@ -300,17 +302,32 @@ function App() {
                   {finalResult.riskLevel === 'MEDIUM' && (
                     <div style={{ textAlign: 'center', marginTop: '12px' }}>
                       <p style={{ marginBottom: '16px', color: 'var(--text-main)' }}>Your agent selected a ₹84,999 laptop, exceeding your ₹80,000 limit.</p>
-                      <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                        <button className="btn btn-success">Approve Anyway</button>
-                        <button className="btn btn-outline">Reject</button>
-                      </div>
+                      {actionMessage ? (
+                        <div className="animate-fade-in" style={{ padding: '12px', background: actionMessage.includes('initiated') ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)', color: actionMessage.includes('initiated') ? 'var(--success)' : 'var(--danger)', borderRadius: '8px', fontWeight: 600 }}>
+                          {actionMessage}
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                          <button className="btn btn-success" onClick={() => setActionMessage('Payment will be initiated.')}>Approve Anyway</button>
+                          <button className="btn btn-outline" onClick={() => setActionMessage('Payment has been revoked.')}>Reject</button>
+                        </div>
+                      )}
                     </div>
                   )}
                   
                   {finalResult.riskLevel === 'HIGH' && (
                     <div style={{ textAlign: 'center', marginTop: '12px', color: 'var(--danger)' }}>
                       <p>Critical Intent Drift. Payment halted to prevent financial loss.</p>
-                      <button className="btn btn-danger" style={{ marginTop: '16px' }}>Review Agent Logs</button>
+                      {actionMessage ? (
+                        <div className="animate-fade-in" style={{ marginTop: '16px', padding: '12px', background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger)', borderRadius: '8px', fontWeight: 600 }}>
+                          {actionMessage}
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '16px' }}>
+                          <button className="btn btn-danger" onClick={() => setActionMessage('Payment has been permanently revoked.')}>Revoke Payment</button>
+                          <button className="btn btn-outline" style={{ color: 'var(--text-main)', borderColor: 'var(--border-light)' }}>Review Agent Logs</button>
+                        </div>
+                      )}
                     </div>
                   )}
 
